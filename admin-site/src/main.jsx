@@ -1,14 +1,10 @@
-// src/main.jsx
+// src/main.jsx – Sửa lại như sau:
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import { Provider } from 'react-redux'
-import { store } from './store'         // <-- đảm bảo file này export store
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <App /> {/* Không cần Provider */}
   </React.StrictMode>,
 )

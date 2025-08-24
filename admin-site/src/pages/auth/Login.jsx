@@ -3,7 +3,13 @@ import { useDispatch, useSelector } from 'react-redux'   // <-- import
 import { useNavigate } from 'react-router-dom'
 import "../../assets/css/login.css";
 import illustration from "../../assets/images/login-illustration.jpeg"; // đặt ảnh vào src/assets/
-import { loginThunk } from "../../features/auth/authSlice";
+import {endpoints} from "../../context/APIs";
+import APIs from "../../context/APIs";
+import { useMyActions } from "../../context/MyContext";
+import { AUTH } from "../../context/MyReducer";
+import { jwtDecode } from "jwt-decode"; 
+
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,19 +17,44 @@ export default function Login() {
   const [showPwd, setShowPwd] = useState(false);
   const [agree, setAgree] = useState(false);
 
-  const dispatch = useDispatch();
+  const { dispatch } = useMyActions(); 
   const navigate = useNavigate();
-  const isAuthed = useSelector((state) => state.auth.token && state.auth.user);
-
-  useEffect(() => {
-    if (isAuthed) navigate('/dashboard', { replace: true });
-  }, [isAuthed, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!agree) return alert('Vui lòng đồng ý điều khoản.');
-    await dispatch(loginThunk({ email, password: pwd }));  // <-- dùng dispatch
-    
+    if (!agree) return alert("Vui lòng đồng ý điều khoản.");
+
+    try {
+      const res = await APIs.post(endpoints['login'], { email, password: pwd });
+      console.log("Login response:", res);
+      const { user, token } = res.data;
+
+      // Lưu vào localStorage (tùy chọn)
+      localStorage.setItem("auth", JSON.stringify({ user, token }));
+      localStorage.setItem("token", token);
+      console.log("print token", token);
+
+      console.log("Đăng nhập thành công:", user, token);
+      const decoded = jwtDecode(token); 
+
+      console.log("Decoded token:", decoded);
+      const role = decoded.roles?.[0]?.authority;
+      const emailFromToken = decoded.sub;
+
+      if (role === "ROLE_admin") {
+        dispatch({
+          type: AUTH.LOGIN,
+          user: { email: emailFromToken, role },
+          token,
+        });
+        navigate("/users", { replace: true }); // nếu muốn redirect sau khi login
+      } else {
+        alert("Bạn không có quyền đăng nhập với tài khoản này.");
+      }
+    } catch (err) {
+      console.error("Lỗi:", err.response?.data || err.message);
+      alert("Đăng nhập thất bại: " + (err.response?.data?.message || "Lỗi không xác định"));
+    }
   };
 
 
