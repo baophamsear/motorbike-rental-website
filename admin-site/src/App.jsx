@@ -6,6 +6,9 @@ import Login from './pages/auth/Login';
 import UserProfile from './pages/auth/UserProfile';
 import { MyProvider } from './context/MyContext';
 import Users from './pages/users/Users';
+import ManageBikes from './pages/motorbikes/ManageBikes';
+import BikeRequirements from './pages/motorbikes/BikeRequirements';
+import ContractsManage from './pages/motorbikes/ContractsManage';
 
 
 export default function App() {
@@ -19,7 +22,9 @@ export default function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<UserProfile />} />
             <Route path="/users" element={<Users />} />
-            {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+            <Route path="/bikes" element={<ManageBikes />} />
+            <Route path="/bikes-requirements" element={<BikeRequirements />} />
+            <Route path="/contracts-manage" element={<ContractsManage />} />
           </Route>
 
           {/* fallback: chuyển mọi đường khác về login */}

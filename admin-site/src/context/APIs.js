@@ -5,7 +5,14 @@ const BASE_URL = 'http://localhost:8080/api';
 
 export const endpoints = {
     'login' : '/auth/login',
-    'users': '/users'
+    'users': '/users',
+    'bikes': '/bikes/alls',
+    'getPendingBikes' : '/bikes/pending',
+    'bikes_status': '/bikes/status',
+    'contracts': '/contracts/all',
+    'update_available_bike': (id) => `/bikes/${id}/available`,
+    'update_active_contract': (id) => `/contracts/${id}/active`,
+    'init_multi': 'contracts/init-multiple',
 }
 
 export default axios.create({
