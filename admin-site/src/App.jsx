@@ -10,8 +10,22 @@ import ManageBikes from './pages/motorbikes/ManageBikes';
 import BikeRequirements from './pages/motorbikes/BikeRequirements';
 import ContractsManage from './pages/motorbikes/ContractsManage';
 
+import { connectAdminSocket } from './utils/adminSocket';
+import { useEffect } from 'react';
+
 
 export default function App() {
+
+  useEffect(() => {
+    const client = connectAdminSocket((data) => {
+      alert('helloworld!');
+      alert(`🚨 Xe mới: ${data.bikeName} từ ${data.ownerEmail}`);
+    });
+
+    return () => client.deactivate(); // Cleanup khi rời trang
+  }, []);
+
+
   return (
     <MyProvider>
       <BrowserRouter>
