@@ -32,6 +32,7 @@ export default function Login() {
       // Lưu vào localStorage (tùy chọn)
       localStorage.setItem("auth", JSON.stringify({ user, token }));
       localStorage.setItem("token", token);
+      
       console.log("print token", token);
 
       console.log("Đăng nhập thành công:", user, token);
@@ -40,6 +41,10 @@ export default function Login() {
       console.log("Decoded token:", decoded);
       const role = decoded.roles?.[0]?.authority;
       const emailFromToken = decoded.sub;
+      console.log(decoded);
+
+      localStorage.setItem("userId", decoded.userId); // Lưu userId
+      console.log("Stored userId:", decoded.userId);
 
       if (role === "ROLE_admin") {
         dispatch({

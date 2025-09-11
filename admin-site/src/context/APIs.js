@@ -13,6 +13,7 @@ export const endpoints = {
     'update_available_bike': (id) => `/bikes/${id}/available`,
     'update_active_contract': (id) => `/contracts/${id}/active`,
     'init_multi': 'contracts/init-multiple',
+    'notifications': 'notifications',
 }
 
 export default axios.create({

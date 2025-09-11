@@ -1,23 +1,28 @@
-// src/utils/adminSocket.js
-
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 
 export const connectAdminSocket = (onReceiveMessage) => {
-  const socket = new SockJS('http://localhost:8080/ws');
+  
+
+  console.log("in ra onreicemessage", `${onReceiveMessage}`);
 
   const client = new Client({
-    webSocketFactory: () => socket,
+    webSocketFactory: () => new WebSocket("ws://localhost:8080/ws"),
     reconnectDelay: 5000,
+    debug: (str) => console.log('[STOMP DEBUG]', str),
+
     onConnect: () => {
-      console.log('✅ WebSocket connected (admin)');
+      console.log('✅ WebSocket connected!');
       client.subscribe('/topic/admin-bike-notifications', (message) => {
-        const data = JSON.parse(message.body);
-        onReceiveMessage(data);
+        console.log('📥 Received WebSocket message:', message.body);
+        onReceiveMessage(JSON.parse(message.body));
       });
     },
-    onStompError: (frame) => {
-      console.error('❌ STOMP error', frame);
+
+    onStompError: (frame) => console.error('❌ STOMP Error', frame),
+    onWebSocketError: (error) => console.error('❌ WebSocket Error', error),
+    onWebSocketClose: (evt) => {
+      console.error('❌ WebSocket closed:', evt.code, evt.reason);
     },
   });
 

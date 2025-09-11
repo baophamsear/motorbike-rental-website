@@ -5,6 +5,8 @@ import Topbar from '../../components/Topbar';
 import Footer from '../../components/Footer';
 import { getAuthApi } from '../../config/authUtils';
 import { endpoints } from '../../context/APIs';
+import { useWebSocket } from '../../utils/useWebSocket';
+import { topics } from '../../utils/topics';
 import '../../assets/css/bikerequirements.css';
 
 export default function BikeRequirements() {
@@ -16,6 +18,8 @@ export default function BikeRequirements() {
   const [zoomedImage, setZoomedImage] = useState(null);
   const [selectedBikeIds, setSelectedBikeIds] = useState([]);
   const [bulkStatus, setBulkStatus] = useState('');
+
+  const { messages } = useWebSocket(topics.admin.bikeNotifications);
 
   const fetchRequirements = async () => {
     try {
@@ -66,9 +70,17 @@ export default function BikeRequirements() {
     }
   };
 
+
   useEffect(() => {
     fetchRequirements();
-  }, []);
+    if (messages.length > 0) {
+      const data = messages[0]; // lấy message mới nhất
+      console.log('📢 [BikeRequirements] Notification received:', data);
+      // alert(`🚨 Xe mới: ${data.bikeName} từ ${data.ownerEmail}`);
+      fetchRequirements(); // reload danh sách
+    }
+  }, [messages]);
+
 
   useEffect(() => {
     if (filterStatus === 'all') {
@@ -89,6 +101,8 @@ export default function BikeRequirements() {
     );
   };
 
+  
+
   const handleBulkUpdate = async () => {
     if (!bulkStatus) {
       alert('Vui lòng chọn trạng thái');
@@ -108,7 +122,7 @@ export default function BikeRequirements() {
       await api.post(endpoints['init_multi'], {
         bikeIds: selectedBikeIds,
       });
-      
+
       alert('Cập nhật trạng thái thành công');
       fetchRequirements();
       setSelectedBikeIds([]);
