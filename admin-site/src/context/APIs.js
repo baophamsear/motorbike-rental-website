@@ -14,6 +14,7 @@ export const endpoints = {
     'update_active_contract': (id) => `/contracts/${id}/active`,
     'init_multi': 'contracts/init-multiple',
     'notifications': 'notifications',
+    'reject_contract': (id) => `/contracts/${id}/reject`,
 }
 
 export default axios.create({
